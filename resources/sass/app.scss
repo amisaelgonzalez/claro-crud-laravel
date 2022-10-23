@@ -1,0 +1,48 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.select2 {
+    width: 100% !important;
+}
+.my-select2 > .select2-container--default .select2-selection--single,
+.my-select2 > .select2-container--default .select2-selection--multiple {
+    border: 1px solid #ced4da;
+}
+.my-select2 > .select2-container .select2-selection--single,
+.my-select2 > .select2-container .select2-selection--multiple {
+    min-height: 35px !important;
+}
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    color: #495057;
+    background-color: #fff;
+    border: solid #5f6fd2 1px !important;
+    outline: 0;
+    box-shadow: 0 0 0 0.1rem rgba(39, 53, 139, 0.25);
+}
+
+.my-select2 > .select2-selection__rendered {
+    line-height: 35px !important;
+}
+.my-select2 > .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 35px;
+}
+.my-select2 > .select2-container--default .select2-selection--single .select2-selection__arrow {
+    min-height: 35px !important;
+}
+.my-select2-restore-active {
+    width: calc(100% - 39px);
+}
+.my-select2-restore-inactive {
+    width: 100%;
+}
+
+.select2-modifiers > .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: none;
+}
