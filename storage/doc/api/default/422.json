@@ -1,0 +1,16 @@
+{
+    "msg": "response.failed_validation_request",
+    "errors": {
+        "exmaple_one": [
+            "The exmaple one field is required."
+        ],
+        "exmaple_two": [
+            "The exmaple two field is required.",
+            "The exmaple two must contain at least one symbol.",
+            "The exmaple two must contain at least one number."
+        ],
+        "exmaple_three": [
+            "The exmaple three field is required."
+        ]
+    }
+}

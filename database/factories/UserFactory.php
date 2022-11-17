@@ -24,7 +24,9 @@ class UserFactory extends Factory
             'identification'    => $this->faker->numerify('########-#'),
             'birthday'          => $this->faker->dateTimeBetween('-100 years', '-18 years'),
             'remember_token'    => Str::random(10),
-            'city_id'           => City::inRandomOrder()->first()
+            'city_id'           => City::inRandomOrder()->first(),
+            'terms_conditions'  => false,
+            'privacy_policies'  => false,
         ];
     }
 

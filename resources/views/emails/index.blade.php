@@ -35,9 +35,6 @@
             case 'SENT':
                 return 'Send';
 
-            case 'UNSUCCESSFUL':
-                return 'Unsuccessful';
-
             default:
                 return '';
         }

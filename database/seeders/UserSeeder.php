@@ -25,7 +25,9 @@ class UserSeeder extends Seeder
             'identification'    => '123456789-1',
             'birthday'          => '1995-01-23',
             'role'              => UserRoleEnum::ADMIN,
-            'city_id'           => 31501
+            'city_id'           => 31501,
+            'terms_conditions'  => true,
+            'privacy_policies'  => true,
         ]);
 
         $user->markEmailAsVerified();

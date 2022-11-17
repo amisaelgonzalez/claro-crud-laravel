@@ -18,7 +18,7 @@ class EmailFactory extends Factory
             'subject'   => $this->faker->word(),
             'to'        => $this->faker->safeEmail(),
             'message'   => $this->faker->text(200),
-            'status'    => $this->faker->randomElement(['PENDING', 'SENT', 'UNSUCCESSFUL']),
+            'status'    => $this->faker->randomElement(['PENDING', 'SENT']),
             'user_id'   => null,
         ];
     }

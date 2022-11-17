@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Lang;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,5 +40,32 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'msg' => Lang::get('response.record_not_found'),
+                ], 404);
+            }
+        });
+    }
+
+    /**
+     * Convert an authentication exception into a response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        foreach ($exception->guards() as $guard) {
+            if ($guard == 'api') {
+                return response()->json([
+                    'msg' => Lang::get('response.unauthorized_access_expire'),
+                ], 401);
+            }
+        }
+        return redirect()->guest($exception->redirectTo());
     }
 }

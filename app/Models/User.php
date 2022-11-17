@@ -8,7 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -27,6 +27,8 @@ class User extends Authenticatable
         'birthday',
         'role',
         'password',
+        'terms_conditions',
+        'privacy_policies',
         'city_id',
     ];
 
@@ -48,6 +50,8 @@ class User extends Authenticatable
     protected $casts = [
         'birthday'          => 'date:Y-m-d',
         'email_verified_at' => 'datetime',
+        'terms_conditions'  => 'boolean',
+        'privacy_policies'  => 'boolean',
     ];
 
     /**
@@ -148,8 +152,26 @@ class User extends Authenticatable
         return $query->orderBy($column, $direction);
     }
 
+    /**
+     * Scope to filter by user role.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeRoleUser($query)
     {
         return $query->where('role', UserRoleEnum::USER);
+    }
+
+    /**
+     * Function to remove user access tokens
+     *
+     * @return void
+     */
+    public function tokenDelete()
+    {
+        $this->tokens->each(function($token, $key) {
+            $token->delete();
+        });
     }
 }

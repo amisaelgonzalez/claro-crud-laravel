@@ -16,7 +16,6 @@ class WorldController extends Controller
      */
     public function countries(Request $request)
     {
-        $term = $request->query('term');
         $countries = Country::when($request->query('term'), function ($query, $value) {
                                 $query->where('name', 'like', "%$value%");
                                 $query->limit(10);

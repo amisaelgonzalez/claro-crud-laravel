@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->enum('role', ['ADMIN', 'USER'])->default('USER');
             $table->string('password');
             $table->rememberToken();
+            $table->boolean('terms_conditions')->default(0);
+            $table->boolean('privacy_policies')->default(0);
 
             $table->foreignId('city_id')->constrained();
 

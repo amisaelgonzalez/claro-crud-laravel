@@ -19,7 +19,7 @@ class CreateEmailsTable extends Migration
             $table->string('subject');
             $table->string('to');
             $table->text('message');
-            $table->enum('status', ['PENDING', 'SENT', 'UNSUCCESSFUL']);
+            $table->enum('status', ['PENDING', 'SENT']);
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
