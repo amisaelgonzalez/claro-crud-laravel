@@ -35,7 +35,7 @@ class AuthController extends Controller
             return response()->json($resp, 401);
         }
 
-        if (! Auth::attempt($request->only(['email', 'password']))) {
+        if (! Auth::attempt($request->safe()->only(['email', 'password']))) {
             $resp = [
                 'msg' => Lang::get('response.incorrect_email_or_password'),
             ];

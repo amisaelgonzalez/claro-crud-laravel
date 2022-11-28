@@ -51,10 +51,7 @@ class EmailController extends Controller
      */
     public function store(StoreEmailRequest $request)
     {
-        Email::create([
-            'subject'   => $request->subject,
-            'to'        => $request->to,
-            'message'   => $request->message,
+        Email::create($request->validated() + [
             'status'    => EmailStatusEnum::PENDING,
             'user_id'   => Auth::id(),
         ]);

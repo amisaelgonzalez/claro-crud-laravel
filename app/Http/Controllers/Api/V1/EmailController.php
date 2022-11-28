@@ -48,10 +48,7 @@ class EmailController extends Controller
      */
     public function store(StoreEmailRequest $request)
     {
-        $email = Email::create([
-            'subject'   => $request->subject,
-            'to'        => $request->to,
-            'message'   => $request->message,
+        $email = Email::create($request->validated() + [
             'status'    => EmailStatusEnum::PENDING,
             'user_id'   => Auth::id(),
         ]);
@@ -104,11 +101,7 @@ class EmailController extends Controller
      */
     public function update(UpdateEmailRequest $request, Email $email)
     {
-        $email->subject = $request->subject;
-        $email->to      = $request->to;
-        $email->message = $request->message;
-
-        $email->update();
+        $email->update($request->validated());
 
         $resp = [
             'msg'   => Lang::get('response.it_has_been_updated_successfully'),

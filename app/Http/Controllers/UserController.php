@@ -7,7 +7,6 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -55,15 +54,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user = User::create([
-            'name'              => $request->name,
-            'email'             => $request->email,
-            'password'          => Hash::make($request->password),
-            'phone'             => $request->phone,
-            'identification'    => $request->identification,
-            'birthday'          => $request->birthday,
-            'role'              => UserRoleEnum::USER,
-            'city_id'           => $request->city_id,
+        $user = User::create($request->validated() + [
+            'role' => UserRoleEnum::USER,
         ]);
 
         return redirect()->route('users.index')->with([
@@ -91,12 +83,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->name     = $request->name;
-        $user->phone    = $request->phone;
-        $user->birthday = $request->birthday;
-        $user->city_id  = $request->city_id;
-
-        $user->update();
+        $user->update($request->validated());
 
         return redirect()->route('users.index')->with([
             'msg' => 'user updated',

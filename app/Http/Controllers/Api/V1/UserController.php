@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enum\UserRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\DeleteUserAccountRequest;
 use App\Http\Requests\Api\V1\StoreUserRequest;
@@ -10,7 +11,6 @@ use App\Http\Requests\Api\V1\UpdateUserRequest;
 use App\Http\Requests\Api\V1\UpdateUserTermsAndPoliciesRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 
 /**
@@ -28,18 +28,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $user = User::create([
-            'name'              => $request->name,
-            'email'             => $request->email,
-            'email'             => $request->email,
-            'phone'             => $request->phone,
-            'identification'    => $request->identification,
-            'birthday'          => $request->birthday,
-            'role'              => 'USER',
-            'password'          => Hash::make($request->password),
-            'terms_conditions'  => $request->terms_conditions,
-            'privacy_policies'  => $request->privacy_policies,
-            'city_id'           => $request->city_id,
+        $user = User::create($request->validated() + [
+            'role' => UserRoleEnum::USER,
         ]);
 
         $user = User::find($user->id);
@@ -87,16 +77,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail(Auth::id());
 
-        $user->name     = $request->name;
-        $user->phone    = $request->phone;
-        $user->birthday = $request->birthday;
-        $user->city_id  = $request->city_id;
-
-        if($request->password) {
-            $user->password = $request->password;
-        }
-
-        $user->update();
+        $user->update($request->safe()->except(['current_password']));
 
         $resp = [
             'msg'   => Lang::get('response.it_has_been_updated_successfully'),
@@ -119,8 +100,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail(Auth::id());
 
-        $user->password = $request->password;
-        $user->update();
+        $user->update($request->safe()->only(['password']));
 
         $resp = [
             'msg'   => Lang::get('response.it_has_been_updated_successfully'),
@@ -143,10 +123,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail(Auth::id());
 
-        $user->terms_conditions = $request->terms_conditions;
-        $user->privacy_policies = $request->privacy_policies;
-
-        $user->update();
+        $user->update($request->validated());
 
         $resp = [
             'msg'   => Lang::get('response.it_has_been_updated_successfully'),

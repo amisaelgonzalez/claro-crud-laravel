@@ -5,7 +5,6 @@ namespace Tests;
 use App\Enum\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 abstract class TestCase extends BaseTestCase
@@ -26,7 +25,7 @@ abstract class TestCase extends BaseTestCase
             ['email' =>  'user@phpunit.test'],
             [
                 'name'              => 'Jhon Doe',
-                'password'          => Hash::make('password'),
+                'password'          => 'password',
                 'phone'             => 9912345678,
                 'identification'    => '123456789-0',
                 'birthday'          => '1995-12-30',
@@ -63,7 +62,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function resetPassword()
     {
-        $this->user->password = Hash::make('password');
+        $this->user->password = 'password';
         $this->user->update();
     }
 
