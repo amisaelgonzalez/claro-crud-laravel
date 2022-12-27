@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Enum\EmailStatusEnum;
 use App\Mail\SendEmail;
-use App\Models\Email;
+use App\Services\EmailService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,14 +23,18 @@ class SendEmails extends Command
      */
     protected $description = 'Send emails';
 
+    protected $emailService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(EmailService $emailService)
     {
         parent::__construct();
+
+        $this->emailService = $emailService;
     }
 
     /**
@@ -41,14 +44,14 @@ class SendEmails extends Command
      */
     public function handle()
     {
-        $emails = Email::pending()->get();
+        $emails = $this->emailService->getPending(1);
 
         foreach ($emails as $email) {
-            Mail::to($email->to)->send(new SendEmail($email));
+            Mail::to($email['to'])->send(new SendEmail($email));
 
-            $this->info('Mail with id '.$email->id.' sent');
-            $email->status = EmailStatusEnum::SENT;
-            $email->update();
+            $this->info('Mail with id '.$email['id'].' sent');
+
+            $this->emailService->updateToSent($email['id']);
         }
 
         return 1;

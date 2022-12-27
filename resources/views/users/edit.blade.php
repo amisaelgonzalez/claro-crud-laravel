@@ -91,7 +91,7 @@
     function countrySelect() {
         $('#country').select2({
             ajax: {
-                url: '{{ route("world.countries") }}',
+                url: '{{ route("api.world.countries") }}',
                 dataType: 'json',
                 processResults: function (data) {
                     return {
@@ -130,7 +130,7 @@
     function stateSelect() {
         $('#state').select2({
             ajax: {
-                url: '{{ route("world.states") }}',
+                url: '{{ route("api.world.states") }}',
                 dataType: 'json',
                 data: function (params) {
                     return {
@@ -169,7 +169,7 @@
     function citySelect() {
         $('#city').select2({
             ajax: {
-                url: '{{ route("world.cities") }}',
+                url: '{{ route("api.world.cities") }}',
                 dataType: 'json',
                 data: function (params) {
                     return {

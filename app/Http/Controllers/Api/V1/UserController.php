@@ -2,16 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enum\UserRoleEnum;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\V1\DeleteUserAccountRequest;
 use App\Http\Requests\Api\V1\StoreUserRequest;
-use App\Http\Requests\Api\V1\UpdateUserPasswordRequest;
 use App\Http\Requests\Api\V1\UpdateUserRequest;
-use App\Http\Requests\Api\V1\UpdateUserTermsAndPoliciesRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Lang;
+use App\Services\ApiResponse;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 
 /**
  * @group  Users
@@ -26,23 +21,11 @@ class UserController extends Controller
      * @responseFile 200 doc/api/v1/user/store.success.json
      * @responseFile 422 doc/api/default/422.json
      */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request, UserService $userService): JsonResponse
     {
-        $user = User::create($request->validated() + [
-            'role' => UserRoleEnum::USER,
-        ]);
+        $user = $userService->store($request->validated());
 
-        $user = User::find($user->id);
-        // $user->sendEmailVerificationNotification();
-
-        $resp = [
-            'msg'   => Lang::get('response.record_created_successfully'),
-            'data'  => [
-                'token' => $user->createToken('claroinsurance_app')->accessToken,
-                'user'  => $user
-            ]
-        ];
-        return response()->json($resp, 201);
+        return ApiResponse::created(compact('user'));
     }
 
     /**
@@ -51,18 +34,13 @@ class UserController extends Controller
      *
      * @responseFile 200 doc/api/v1/user/show.success.json
      * @responseFile 401 doc/api/default/401.json
+     * @responseFile 404 doc/api/default/404.json
      */
-    public function show()
+    public function show(UserService $userService, $userId): JsonResponse
     {
-        $user = Auth::user();
+        $user = $userService->getById($userId);
 
-        $resp = [
-            'msg'   => Lang::get('response.user_detail'),
-            'data'  => [
-                'user' => $user
-            ]
-        ];
-        return response()->json($resp, 200);
+        return ApiResponse::detail(compact('user'));
     }
 
     /**
@@ -71,67 +49,14 @@ class UserController extends Controller
      *
      * @responseFile 200 doc/api/v1/user/update.success.json
      * @responseFile 401 doc/api/default/401.json
+     * @responseFile 404 doc/api/default/404.json
      * @responseFile 422 doc/api/default/422.json
      */
-    public function update(UpdateUserRequest $request)
+    public function update(UpdateUserRequest $request, UserService $userService, $userId): JsonResponse
     {
-        $user = User::findOrFail(Auth::id());
+        $user = $userService->update($userId, $request->safe()->except(['current_password']));
 
-        $user->update($request->safe()->except(['current_password']));
-
-        $resp = [
-            'msg'   => Lang::get('response.it_has_been_updated_successfully'),
-            'data'  => [
-                'user' => $user
-            ]
-        ];
-        return response()->json($resp, 200);
-    }
-
-    /**
-     * Update user password
-     * @authenticated
-     *
-     * @responseFile 200 doc/api/v1/user/update-password.success.json
-     * @responseFile 401 doc/api/default/401.json
-     * @responseFile 422 doc/api/default/422.json
-     */
-    public function updatePassword(UpdateUserPasswordRequest $request)
-    {
-        $user = User::findOrFail(Auth::id());
-
-        $user->update($request->safe()->only(['password']));
-
-        $resp = [
-            'msg'   => Lang::get('response.it_has_been_updated_successfully'),
-            'data'  => [
-                'user' => $user
-            ]
-        ];
-        return response()->json($resp, 200);
-    }
-
-    /**
-     * Update the terms of use and privacy policies.
-     * @authenticated
-     *
-     * @responseFile 200 doc/api/v1/user/update-terms-and-policies.success.json
-     * @responseFile 401 doc/api/default/401.json
-     * @responseFile 422 doc/api/default/422.json
-     */
-    public function updateTermsAndPolicies(UpdateUserTermsAndPoliciesRequest $request)
-    {
-        $user = User::findOrFail(Auth::id());
-
-        $user->update($request->validated());
-
-        $resp = [
-            'msg'   => Lang::get('response.it_has_been_updated_successfully'),
-            'data'  => [
-                'user' => $user
-            ]
-        ];
-        return response()->json($resp, 200);
+        return ApiResponse::updated(compact('user'));
     }
 
     /**
@@ -140,18 +65,13 @@ class UserController extends Controller
      *
      * @responseFile 200 doc/api/v1/user/delete-account.success.json
      * @responseFile 401 doc/api/default/401.json
+     * @responseFile 404 doc/api/default/404.json
      * @responseFile 422 doc/api/default/422.json
      */
-    public function deleteAccount(DeleteUserAccountRequest $Request)
+    public function deleteAccount(UserService $userService, $userId): JsonResponse
     {
-        $user = User::findOrFail(Auth::id());
+        $userService->deleteById($userId);
 
-        $user->delete();
-        $user->tokenDelete();
-
-        $resp = [
-            'msg' => Lang::get('response.record_successfully_removed'),
-        ];
-        return response()->json($resp, 200);
+        return ApiResponse::deleted();
     }
 }

@@ -16,7 +16,7 @@ class WorldControllerTest extends TestCase
      */
     public function test_get_countries()
     {
-        $response = $this->get('api/v1/world/countries?term=ecu', $this->getHeaders());
+        $response = $this->get('api/v1/world/countries?term=ecu');
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'msg',
@@ -62,7 +62,7 @@ class WorldControllerTest extends TestCase
      */
     public function test_get_states()
     {
-        $response = $this->get('api/v1/world/states?term=azua', $this->getHeaders());
+        $response = $this->get('api/v1/world/states?term=azua');
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'msg',
@@ -97,7 +97,7 @@ class WorldControllerTest extends TestCase
      */
     public function test_get_cities()
     {
-        $response = $this->get('api/v1/world/cities?term=ecua', $this->getHeaders());
+        $response = $this->get('api/v1/world/cities?term=cuenc');
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'msg',

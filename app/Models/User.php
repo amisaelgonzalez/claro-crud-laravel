@@ -6,6 +6,8 @@ use App\Enum\UserRoleEnum;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -23,6 +25,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'phone',
         'identification',
         'birthday',
@@ -99,88 +102,24 @@ class User extends Authenticatable
 
     /**
      * Get the city that owns the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function city()
+    public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
     }
 
     /**
      * Get the emails for the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function emails()
+    public function emails(): HasMany
     {
         return $this->hasMany(Email::class);
     }
 
     /**
-     * Scope for general filtering of names, phone, email or identification
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string  $keywords
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeOverallSearch($query, $keywords)
-    {
-        return $query->when($keywords, function ($query, $value) {
-                    $query->orWhere('name', 'like', "%{$value}%")
-                            ->orWhere('phone', 'like', "%{$value}%")
-                            ->orWhere('email', 'like', "%{$value}%")
-                            ->orWhere('identification', 'like', "%{$value}%");
-                });
-    }
-
-    /**
-     * Scope to sort records.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  string  $column
-     * @param  string  $direction
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeCustomOrderBy($query, $column, $direction)
-    {
-        $sortableColumns = [
-            'id',
-            'name',
-            'email',
-            'phone',
-            'identification',
-            'birthday',
-        ];
-
-        if (! in_array($column, $sortableColumns)) {
-            $column = 'id';
-        }
-
-        if ($direction !== 'asc' && $direction !== 'desc') {
-            $direction = 'asc';
-        }
-
-        return $query->orderBy($column, $direction);
-    }
-
-    /**
-     * Scope to filter by user role.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeRoleUser($query)
-    {
-        return $query->where('role', UserRoleEnum::USER);
-    }
-
-    /**
      * Function to remove user access tokens
-     *
-     * @return void
      */
-    public function tokenDelete()
+    public function tokenDelete(): void
     {
         $this->tokens->each(function($token, $key) {
             $token->delete();

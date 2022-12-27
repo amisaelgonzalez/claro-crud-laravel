@@ -2,35 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Enum\UserRoleEnum;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, UserService $userService): View|JsonResponse
     {
         if($request->ajax()) {
-            $query = User::overallSearch($request->query('search'))->roleUser();
-            $total = $query->count();
-            $users = $query->with('city')
-                            ->customOrderBy($request->query('sort', 'id'), $request->query('order', 'asc'))
-                            ->offset($request->query('offset', 0))->limit($request->query('limit', 10))
-                            ->get();
-
-            return response()->json([
-                'rows'              => $users,
-                'total'             => $total,
-                'totalNotFiltered'  => User::roleUser()->count(),
+            $usersPaginated = $userService->getPaginatedWithFilters([
+                'search'    => $request->query('search', null),
+                'sort'      => $request->query('sort', 'id'),
+                'order'     => $request->query('order', 'asc'),
+                'offset'    => $request->query('offset', 0),
+                'limit'     => $request->query('limit', 0),
             ]);
+
+            return response()->json($usersPaginated);
         }
 
         return view('users.index');
@@ -38,25 +34,18 @@ class UserController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Contracts\View\View
      */
-    public function create()
+    public function create(): View
     {
         return view('users.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreUserRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request, UserService $userService): RedirectResponse
     {
-        $user = User::create($request->validated() + [
-            'role' => UserRoleEnum::USER,
-        ]);
+        $userService->store($request->validated());
 
         return redirect()->route('users.index')->with([
             'msg' => 'user created',
@@ -65,25 +54,20 @@ class UserController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Contracts\View\View
      */
-    public function edit(User $user)
+    public function edit(UserService $userService, int $userId): View
     {
+        $user = $userService->getById($userId);
+
         return view('users.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateUserRequest  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, UserService $userService, int $userId): RedirectResponse
     {
-        $user->update($request->validated());
+        $userService->update($userId, $request->validated());
 
         return redirect()->route('users.index')->with([
             'msg' => 'user updated',
@@ -92,13 +76,10 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(UserService $userService, int $userId): JsonResponse
     {
-        $user->delete();
+        $userService->deleteById($userId);
 
         return response()->json([
             'msg' => 'user deleted',

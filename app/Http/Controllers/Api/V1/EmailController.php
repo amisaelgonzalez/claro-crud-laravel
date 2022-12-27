@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Enum\EmailStatusEnum;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreEmailRequest;
 use App\Http\Requests\Api\V1\UpdateEmailRequest;
 use App\Models\Email;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Services\ApiResponse;
+use App\Services\EmailService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Lang;
 
 /**
  * @group  Emails
@@ -25,17 +24,11 @@ class EmailController extends Controller
      * @responseFile 200 doc/api/v1/email/emails.success.json
      * @responseFile 401 doc/api/default/401.json
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $emails = Email::where('user_id', Auth::id())->paginate(10);
 
-        $resp = [
-            'msg'   => Lang::get('response.paginated_list_of_emails'),
-            'data'  => [
-                'emails' => $emails
-            ]
-        ];
-        return response()->json($resp, 200);
+        return ApiResponse::fullList(compact('emails'));
     }
 
     /**
@@ -46,20 +39,11 @@ class EmailController extends Controller
      * @responseFile 401 doc/api/default/401.json
      * @responseFile 422 doc/api/default/422.json
      */
-    public function store(StoreEmailRequest $request)
+    public function store(StoreEmailRequest $request, EmailService $emailService): JsonResponse
     {
-        $email = Email::create($request->validated() + [
-            'status'    => EmailStatusEnum::PENDING,
-            'user_id'   => Auth::id(),
-        ]);
+        $email = $emailService->store($request->validated());
 
-        $resp = [
-            'msg'   => Lang::get('response.record_created_successfully'),
-            'data'  => [
-                'email' => $email
-            ]
-        ];
-        return response()->json($resp, 201);
+        return ApiResponse::created(compact('email'));
     }
 
     /**
@@ -73,19 +57,11 @@ class EmailController extends Controller
      * @responseFile 401 doc/api/default/401.json
      * @responseFile 404 doc/api/default/404.json
     */
-    public function show(Email $email, $status = null)
+    public function show(EmailService $emailService, $emailId, $status = null): JsonResponse
     {
-        if ($status && $status !== $email->status) {
-            throw new ModelNotFoundException();
-        }
+        $email = $emailService->getByIdAndStatus($emailId, $status);
 
-        $resp = [
-            'msg'   => Lang::get('response.email_detail'),
-            'data'  => [
-                'email' => $email
-            ]
-        ];
-        return response()->json($resp, 200);
+        return ApiResponse::detail(compact('email'));
     }
 
     /**
@@ -99,16 +75,10 @@ class EmailController extends Controller
      * @responseFile 404 doc/api/default/404.json
      * @responseFile 422 doc/api/default/422.json
      */
-    public function update(UpdateEmailRequest $request, Email $email)
+    public function update(UpdateEmailRequest $request, EmailService $emailService, $emailId): JsonResponse
     {
-        $email->update($request->validated());
+        $email = $emailService->update($emailId, $request->validated());
 
-        $resp = [
-            'msg'   => Lang::get('response.it_has_been_updated_successfully'),
-            'data'  => [
-                'email' => $email
-            ]
-        ];
-        return response()->json($resp, 200);
+        return ApiResponse::updated(compact('email'));
     }
 }

@@ -133,11 +133,12 @@
     function countrySelect() {
         $('#country').select2({
             ajax: {
-                url: '{{ route("world.countries") }}',
+                url: '{{ route("api.world.countries") }}',
                 dataType: 'json',
                 processResults: function (data) {
+                    console.log(data.data);
                     return {
-                        results: data.countries.map(data => {
+                        results: data.data.countries.map(data => {
                             return {
                                 id: data.id,
                                 text: data.name,
@@ -172,7 +173,7 @@
     function stateSelect() {
         $('#state').select2({
             ajax: {
-                url: '{{ route("world.states") }}',
+                url: '{{ route("api.world.states") }}',
                 dataType: 'json',
                 data: function (params) {
                     return {
@@ -182,7 +183,7 @@
                 },
                 processResults: function (data) {
                     return {
-                        results: data.states.map(data => {
+                        results: data.data.states.map(data => {
                             return {
                                 id: data.id,
                                 text: data.name,
@@ -211,7 +212,7 @@
     function citySelect() {
         $('#city').select2({
             ajax: {
-                url: '{{ route("world.cities") }}',
+                url: '{{ route("api.world.cities") }}',
                 dataType: 'json',
                 data: function (params) {
                     return {
@@ -221,7 +222,7 @@
                 },
                 processResults: function (data) {
                     return {
-                        results: data.cities.map(data => {
+                        results: data.data.cities.map(data => {
                             return {
                                 id: data.id,
                                 text: data.name,

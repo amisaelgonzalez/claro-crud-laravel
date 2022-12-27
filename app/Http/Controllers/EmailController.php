@@ -2,32 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Enum\EmailStatusEnum;
 use App\Http\Requests\StoreEmailRequest;
-use App\Models\Email;
+use App\Services\EmailService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class EmailController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, EmailService $emailService): View|JsonResponse
     {
         if($request->ajax()) {
-            $query = Email::where('user_id', Auth::id());
-            $total = $query->count();
-            $emails = $query->offset($request->query('offset', 0))->limit($request->query('limit', 10))->get();
+            $emailsPaginated = $emailService->getPaginatedByUser($request->query('offset', 0), $request->query('limit', 0));
 
-            return response()->json([
-                'rows'              => $emails,
-                'total'             => $total,
-                'totalNotFiltered'  => $total,
-            ]);
+            return response()->json($emailsPaginated);
         }
 
         return view('emails.index');
@@ -35,26 +27,18 @@ class EmailController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Contracts\View\View
      */
-    public function create()
+    public function create(): View
     {
         return view('emails.create');
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreEmailRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreEmailRequest $request)
+    public function store(StoreEmailRequest $request, EmailService $emailService): RedirectResponse
     {
-        Email::create($request->validated() + [
-            'status'    => EmailStatusEnum::PENDING,
-            'user_id'   => Auth::id(),
-        ]);
+        $emailService->store($request->validated());
 
         return redirect()->route('emails.index')->with([
             'msg' => 'Email created',

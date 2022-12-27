@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Email;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -31,10 +30,10 @@ class SendEmail extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Email $email)
+    public function __construct($email)
     {
-        $this->subject = $email->subject;
-        $this->message = $email->message;
+        $this->subject = $email['subject'];
+        $this->message = $email['message'];
     }
 
     /**

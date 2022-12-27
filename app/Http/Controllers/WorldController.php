@@ -2,70 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\City;
-use App\Models\Country;
-use App\Models\State;
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\V1\FilterCityRequest;
+use App\Http\Requests\Api\V1\FilterCountryRequest;
+use App\Http\Requests\Api\V1\FilterStateRequest;
+use App\Services\CityService;
+use App\Services\CountryService;
+use App\Services\StateService;
+use Illuminate\Http\JsonResponse;
 
 class WorldController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function countries(Request $request)
+    public function countries(FilterCountryRequest $request, CountryService $countryService): JsonResponse
     {
-        $countries = Country::when($request->query('term'), function ($query, $value) {
-                                $query->where('name', 'like', "%$value%");
-                                $query->limit(10);
-                            })
-                            ->get();
+        $countries = $countryService->getByName($request->validated());
 
-        return response()->json([
-            'countries' => $countries,
-        ]);
+        return response()->json(compact('countries'));
     }
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function states(Request $request)
+    public function states(FilterStateRequest $request, StateService $stateService): JsonResponse
     {
-        $states = State::when($request->query('term'), function ($query, $value) {
-                            $query->where('name', 'like', "%$value%");
-                            $query->limit(10);
-                        })
-                        ->when($request->query('country_id'), function ($query, $value) {
-                            $query->where('country_id', $value);
-                        })
-                        ->get();
+        $states = $stateService->getByCountryAndSearch($request->validated());
 
-        return response()->json([
-            'states' => $states,
-        ]);
+        return response()->json(compact('states'));
     }
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function cities(Request $request)
+    public function cities(FilterCityRequest $request, CityService $cityService): JsonResponse
     {
-        $cities = City::when($request->query('term'), function ($query, $value) {
-                            $query->where('name', 'like', "%$value%");
-                            $query->limit(10);
-                        })
-                        ->when($request->query('state_id'), function ($query, $value) {
-                            $query->where('state_id', $value);
-                        })
-                        ->get();
+        $cities = $cityService->getByStateAndSearch($request->validated());
 
-        return response()->json([
-            'cities' => $cities,
-        ]);
+        return response()->json(compact('cities'));
     }
 }
