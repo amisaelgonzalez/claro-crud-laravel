@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\Country;
+namespace App\Repositories\Eloquent\Country;
 
 use App\Models\Country;
-use App\Repositories\BaseRepository;
+use App\Repositories\EloquentBaseRepository;
 
-class CountryRepository extends BaseRepository implements CountryRepositoryInterface
+class CountryRepository extends EloquentBaseRepository implements CountryRepositoryInterface
 {
     /**
      * Create a new repository instance.

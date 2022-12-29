@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\State;
+namespace App\Repositories\Eloquent\State;
 
 use App\Models\State;
-use App\Repositories\BaseRepository;
+use App\Repositories\EloquentBaseRepository;
 
-class StateRepository extends BaseRepository implements StateRepositoryInterface
+class StateRepository extends EloquentBaseRepository implements StateRepositoryInterface
 {
     /**
      * Create a new repository instance.

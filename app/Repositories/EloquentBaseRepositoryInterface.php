@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-interface BaseRepositoryInterface
+interface EloquentBaseRepositoryInterface
 {
 	public function all(): array;
 

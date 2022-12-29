@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\User\UserRepository;
+use App\Repositories\Eloquent\User\UserRepository;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileService

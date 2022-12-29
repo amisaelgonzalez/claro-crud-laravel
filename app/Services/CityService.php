@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\City\CityRepository;
+use App\Repositories\Eloquent\City\CityRepository;
 use Illuminate\Support\Arr;
 
 class CityService

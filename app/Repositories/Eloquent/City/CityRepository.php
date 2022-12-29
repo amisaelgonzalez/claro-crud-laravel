@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\City;
+namespace App\Repositories\Eloquent\City;
 
 use App\Models\City;
-use App\Repositories\BaseRepository;
+use App\Repositories\EloquentBaseRepository;
 
-class CityRepository extends BaseRepository implements CityRepositoryInterface
+class CityRepository extends EloquentBaseRepository implements CityRepositoryInterface
 {
     /**
      * Create a new repository instance.

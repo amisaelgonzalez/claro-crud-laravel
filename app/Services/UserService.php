@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\UserRoleEnum;
-use App\Repositories\User\UserRepository;
+use App\Repositories\Eloquent\User\UserRepository;
 
 class UserService
 {

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\State\StateRepository;
+use App\Repositories\Eloquent\State\StateRepository;
 use Illuminate\Support\Arr;
 
 class StateService

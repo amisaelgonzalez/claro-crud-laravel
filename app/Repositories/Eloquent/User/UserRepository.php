@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\User;
+namespace App\Repositories\Eloquent\User;
 
 use App\Models\User;
-use App\Repositories\BaseRepository;
+use App\Repositories\EloquentBaseRepository;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class UserRepository extends EloquentBaseRepository implements UserRepositoryInterface
 {
     /**
      * Create a new repository instance.

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enum\EmailStatusEnum;
-use App\Repositories\Email\EmailRepository;
+use App\Repositories\Eloquent\Email\EmailRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 

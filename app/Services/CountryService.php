@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\Country\CountryRepository;
+use App\Repositories\Eloquent\Country\CountryRepository;
 use Illuminate\Support\Arr;
 
 class CountryService

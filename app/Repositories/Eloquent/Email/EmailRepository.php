@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repositories\Email;
+namespace App\Repositories\Eloquent\Email;
 
 use App\Models\Email;
-use App\Repositories\BaseRepository;
+use App\Repositories\EloquentBaseRepository;
 
-class EmailRepository extends BaseRepository implements EmailRepositoryInterface
+class EmailRepository extends EloquentBaseRepository implements EmailRepositoryInterface
 {
     /**
      * Create a new repository instance.
